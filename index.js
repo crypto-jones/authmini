@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const session = require('express-session'); // added this library
+const KnexSessionStore = require('connect-session-knex')(session);
 
 const db = require('./database/dbConfig.js');
 
@@ -15,8 +16,15 @@ const sessionConfig = {
   saveUninitialized: false, // laws !
   cookie: {
     secure: false, // over httpS
-    maxAge: 1000 * 60 * 1
-  }
+    maxAge: 1000 * 60 * 10
+  },
+  store: new KnexSessionStore({
+    tablename: 'sessions',
+    sidfieldname: 'sid',
+    knex: db,
+    createTable: true,
+    clearInterval: 1000 * 60 * 60 // removes only expired sessions
+  })
 };
 server.use(session(sessionConfig));
 
