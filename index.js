@@ -65,6 +65,18 @@ server.post('/login', (req, res) => {
     });
 });
 
+server.get('/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send('You cannot leave!');
+      } else {
+        res.send('good bye');
+      }
+    });
+  }
+});
+
 // protect this route, only authenticated users should see it
 server.get('/users', protected, (req, res) => {
   console.log(req.session);
